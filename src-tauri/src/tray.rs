@@ -87,6 +87,8 @@ pub fn show_health(app: &AppHandle, health: Health) {
     };
 
     let _ = tray.set_icon(Some(icon));
+    // A new image is not a template until said so again, and would show black.
+    let _ = tray.set_icon_as_template(true);
     let _ = tray.set_tooltip(Some(tooltip));
 }
 
