@@ -7,6 +7,7 @@
   "type": "module",
   "scripts": {
     "cli": "node scripts/build-cli.mjs",
+    "dmg": "scripts/make-dmg.sh",
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "typecheck": "tsc --noEmit",

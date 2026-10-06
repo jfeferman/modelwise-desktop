@@ -40,12 +40,15 @@ You need Rust, [Bun](https://bun.sh) and Node 20 or later.
 ```bash
 npm install
 npm run tauri build
+npm run dmg
 ```
 
 `scripts/build-cli.mjs` compiles the `modelwise` command into one executable with Bun, from the
 `@modelwise/cli` version `package.json` pins, and checks it prints the JSON version this app reads.
 To build against a command you are working on instead, point `MODELWISE_CLI_BUNDLE` at its
-`dist/cli.js`. The app and the disk image land in `src-tauri/target/release/bundle/`.
+`dist/cli.js`. `scripts/make-dmg.sh` puts the app and a link to Applications on a disk image, by
+mounting a blank one rather than with `hdiutil create -srcfolder`, which fails on some machines.
+The app and the disk image land in `src-tauri/target/release/bundle/`.
 
 For working on the panel, a debug build opens it at launch and keeps it open:
 
