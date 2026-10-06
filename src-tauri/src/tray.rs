@@ -68,6 +68,9 @@ pub fn create(app: &AppHandle) -> tauri::Result<()> {
         })
         .build(app)?;
 
+    #[cfg(debug_assertions)]
+    eprintln!("tray created");
+
     Ok(())
 }
 
@@ -86,7 +89,7 @@ pub fn show_health(app: &AppHandle, health: Health) {
     let _ = tray.set_tooltip(Some(tooltip));
 }
 
-fn toggle_panel(app: &AppHandle) {
+pub fn toggle_panel(app: &AppHandle) {
     if let Some(panel) = app.get_webview_window(PANEL) {
         let _ = panel.destroy();
         return;
@@ -126,6 +129,9 @@ pub fn open_panel(app: &AppHandle) -> tauri::Result<()> {
 
     let app = app.clone();
     panel.on_window_event(move |event| {
+        #[cfg(debug_assertions)]
+        eprintln!("panel event: {event:?}");
+
         if let WindowEvent::Focused(false) = event {
             if app.state::<PanelState>().held.load(Ordering::Relaxed) {
                 return;

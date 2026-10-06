@@ -50,6 +50,9 @@ pub fn run() {
 
             if held_open() {
                 tray::open_panel(app.handle())?;
+            } else if cfg!(debug_assertions) && std::env::var_os("MODELWISE_DESKTOP_CLICK").is_some() {
+                // As if the icon were clicked, blur-to-close and all.
+                tray::toggle_panel(app.handle());
             }
 
             Ok(())

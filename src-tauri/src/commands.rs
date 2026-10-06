@@ -43,6 +43,9 @@ pub async fn check(app: &AppHandle) -> Result<Value, String> {
             Ok(status)
         }
         Err(message) => {
+            #[cfg(debug_assertions)]
+            eprintln!("check failed: {message}");
+
             tray::show_health(app, health::Health::Broken);
             Err(message)
         }
