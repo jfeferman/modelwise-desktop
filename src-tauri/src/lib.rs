@@ -32,7 +32,8 @@ pub fn run() {
             commands::connect,
             commands::usage,
             commands::set_paused,
-            commands::set_autostart
+            commands::set_autostart,
+            commands::resize_panel
         ])
         .setup(|app| {
             // A menu bar app: no Dock icon, no app menu.

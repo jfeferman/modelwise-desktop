@@ -3,9 +3,9 @@
 with the diagonal lit and joined (apps/web/src/components/Logo.tsx).
 
   src-tauri/icons/tray.png            36px, black on clear; macOS tints it for the menu bar
-                                      the diagonal lit and joined: working
-  src-tauri/icons/tray-attention.png  the diagonal lit but not joined: needs attention
-  src-tauri/icons/tray-broken.png     nothing lit: not working
+                                      all nine dots, the diagonal joined: working
+  src-tauri/icons/tray-attention.png  the dots, the diagonal not joined: needs attention
+  src-tauri/icons/tray-broken.png     the dots faded: not working
   app-icon.png                        1024px, the mark in the brand orange on a dark rounded square
 
 Run `npm run tauri icon app-icon.png` afterwards for the sizes a bundle needs.
@@ -106,8 +106,11 @@ def sampled(size, inset, joined, lit, colours, samples=3):
     return pixel
 
 
-def tray(joined, lit):
-    return sampled(36, 2, joined, lit, {"lit": (0, 0, 0, 255), "dim": (0, 0, 0, 90)})
+def tray(joined, faded):
+    """In the menu bar every dot is solid, so the icon reads like its neighbours; only the
+    joiners tell the states apart, and fading everything says nothing is working."""
+    alpha = 90 if faded else 255
+    return sampled(36, 2, joined, True, {"lit": (0, 0, 0, alpha), "dim": (0, 0, 0, alpha)})
 
 
 def app_icon(x, y):
@@ -130,7 +133,7 @@ app_icon.mark = sampled(
 )
 
 (ROOT / "src-tauri/icons").mkdir(parents=True, exist_ok=True)
-(ROOT / "src-tauri/icons/tray.png").write_bytes(png(36, tray(joined=True, lit=True)))
-(ROOT / "src-tauri/icons/tray-attention.png").write_bytes(png(36, tray(joined=False, lit=True)))
-(ROOT / "src-tauri/icons/tray-broken.png").write_bytes(png(36, tray(joined=False, lit=False)))
+(ROOT / "src-tauri/icons/tray.png").write_bytes(png(36, tray(joined=True, faded=False)))
+(ROOT / "src-tauri/icons/tray-attention.png").write_bytes(png(36, tray(joined=False, faded=False)))
+(ROOT / "src-tauri/icons/tray-broken.png").write_bytes(png(36, tray(joined=False, faded=True)))
 (ROOT / "app-icon.png").write_bytes(png(1024, app_icon))

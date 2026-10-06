@@ -144,6 +144,19 @@ pub fn set_autostart(app: AppHandle, enabled: bool) -> Result<(), String> {
     if enabled { launch.enable() } else { launch.disable() }.map_err(|error| error.to_string())
 }
 
+/// Fits the panel to its content, which the page measures. Within limits, so a
+/// page cannot make the window useless.
+#[tauri::command]
+pub fn resize_panel(app: AppHandle, height: f64) -> Result<(), String> {
+    let height = height.clamp(80.0, 720.0);
+    let Some(panel) = app.get_webview_window("panel") else {
+        return Ok(());
+    };
+    panel
+        .set_size(tauri::LogicalSize::new(tray::PANEL_WIDTH, height))
+        .map_err(|error| error.to_string())
+}
+
 /// Pauses or resumes background sync. Checks carry on either way.
 #[tauri::command]
 pub fn set_paused(app: AppHandle, paused: bool) -> Result<(), String> {

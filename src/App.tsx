@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { ConnectForm } from "./features/connect/ConnectForm";
 import { ConnectionRow } from "./features/status/ConnectionRow";
-import { setAutostart, setPaused, status, syncNow } from "./lib/cli";
+import { resizePanel, setAutostart, setPaused, status, syncNow } from "./lib/cli";
 import type { Status } from "./lib/schema";
 
 type State = { phase: "loading" } | { phase: "ready"; status: Status } | { phase: "failed"; message: string };
@@ -11,6 +11,18 @@ export function App() {
   const [syncing, setSyncing] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
   const [showConnect, setShowConnect] = useState(false);
+  const panel = useRef<HTMLElement>(null);
+
+  // The window follows the content's height.
+  useLayoutEffect(() => {
+    const element = panel.current;
+    if (!element) return;
+    const fit = () => resizePanel(Math.ceil(element.getBoundingClientRect().height));
+    const observer = new ResizeObserver(fit);
+    observer.observe(element);
+    fit();
+    return () => observer.disconnect();
+  }, []);
 
   const refresh = useCallback(() => {
     setState({ phase: "loading" });
@@ -50,7 +62,7 @@ export function App() {
   const connected = ready !== null && ready.connections.length > 0;
 
   return (
-    <main className="panel">
+    <main className="panel" ref={panel}>
       <header className="panel-head">
         <h1>Modelwise</h1>
         <div className="actions">

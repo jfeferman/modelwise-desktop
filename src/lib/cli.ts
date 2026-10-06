@@ -32,6 +32,11 @@ export function setAutostart(enabled: boolean): Promise<void> {
   return invoke("set_autostart", { enabled });
 }
 
+/** Fits the window to the page. */
+export function resizePanel(height: number): Promise<void> {
+  return invoke("resize_panel", { height });
+}
+
 /** Signs in to `url`, reporting each step. Resolves when the command ends, well or badly. */
 export async function connect(url: string, onEvent: (event: ConnectEvent) => void): Promise<void> {
   let stop: UnlistenFn | null = await listen<ConnectEvent>("connect", (received) => onEvent(received.payload));

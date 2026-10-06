@@ -15,6 +15,7 @@ use tauri_plugin_positioner::{Position, WindowExt};
 use crate::health::Health;
 
 const PANEL: &str = "panel";
+pub const PANEL_WIDTH: f64 = 360.0;
 const TRAY: &str = "modelwise";
 
 /// When the panel last closed for losing focus. Clicking the icon while the
@@ -109,8 +110,11 @@ pub fn toggle_panel(app: &AppHandle) {
 pub fn open_panel(app: &AppHandle) -> tauri::Result<()> {
     let panel = WebviewWindowBuilder::new(app, PANEL, WebviewUrl::App("index.html".into()))
         .title("Modelwise")
-        .inner_size(360.0, 480.0)
+        .inner_size(PANEL_WIDTH, 200.0)
         .decorations(false)
+        // The page draws its own rounded border; the window itself is clear.
+        .transparent(true)
+        .shadow(false)
         .resizable(false)
         .always_on_top(true)
         .skip_taskbar(true)
