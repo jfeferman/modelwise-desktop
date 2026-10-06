@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { ConnectForm } from "./features/connect/ConnectForm";
 import { ConnectionRow } from "./features/status/ConnectionRow";
-import { setPaused, status, syncNow } from "./lib/cli";
+import { setAutostart, setPaused, status, syncNow } from "./lib/cli";
 import type { Status } from "./lib/schema";
 
 type State = { phase: "loading" } | { phase: "ready"; status: Status } | { phase: "failed"; message: string };
@@ -37,9 +37,9 @@ export function App() {
     }
   }
 
-  async function togglePaused(paused: boolean) {
+  async function change(apply: () => Promise<void>) {
     try {
-      await setPaused(paused);
+      await apply();
     } catch (error) {
       setNotice(String(error));
     }
@@ -85,9 +85,17 @@ export function App() {
             <input
               type="checkbox"
               checked={!ready.app.paused}
-              onChange={(event) => togglePaused(!event.target.checked)}
+              onChange={(event) => change(() => setPaused(!event.target.checked))}
             />
             Sync in the background every hour
+          </label>
+          <label className="toggle">
+            <input
+              type="checkbox"
+              checked={ready.app.autostart}
+              onChange={(event) => change(() => setAutostart(event.target.checked))}
+            />
+            Start when you log in
           </label>
           {showConnect ? (
             <ConnectForm onConnected={() => { setShowConnect(false); refresh(); }} />

@@ -7,6 +7,7 @@ use std::sync::Mutex;
 
 use serde_json::{json, Value};
 use tauri::{AppHandle, Emitter, Manager};
+use tauri_plugin_autostart::ManagerExt;
 
 use crate::{cli, health, settings, tray};
 
@@ -35,7 +36,10 @@ pub async fn check(app: &AppHandle) -> Result<Value, String> {
             let worst = health::annotate(&mut status);
             tray::show_health(app, worst);
             remember(app, &status);
-            status["app"] = json!({ "paused": settings::paused(app) });
+            status["app"] = json!({
+                "paused": settings::paused(app),
+                "autostart": app.autolaunch().is_enabled().unwrap_or(false)
+            });
             Ok(status)
         }
         Err(message) => {
@@ -120,6 +124,21 @@ pub async fn connect(app: AppHandle, url: String) -> Result<(), String> {
     tray::hold_panel(&app, false);
 
     result?
+}
+
+/// The person's own usage over the last day, for every connection.
+#[tauri::command]
+pub async fn usage() -> Result<Value, String> {
+    tauri::async_runtime::spawn_blocking(|| cli::run(&["usage", "--period", "24h"]))
+        .await
+        .map_err(|error| error.to_string())?
+}
+
+/// Starts the app at login, or stops doing so.
+#[tauri::command]
+pub fn set_autostart(app: AppHandle, enabled: bool) -> Result<(), String> {
+    let launch = app.autolaunch();
+    if enabled { launch.enable() } else { launch.disable() }.map_err(|error| error.to_string())
 }
 
 /// Pauses or resumes background sync. Checks carry on either way.

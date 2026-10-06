@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { disconnect, repair } from "../../lib/cli";
 import type { Connection } from "../../lib/schema";
+import { UsageLine } from "./UsageLine";
 
 const LABEL = { working: "Working", attention: "Needs attention", broken: "Not working" } as const;
 
@@ -54,6 +55,7 @@ export function ConnectionRow({ connection, onChanged }: { connection: Connectio
         {connection.configDir}
       </div>
       <div className="connection-detail">{lastSync(connection)}</div>
+      {connection.check?.token === "live" && <UsageLine configDir={connection.configDir} />}
       {problems.map((problem) => (
         <div key={problem} className={`problem problem-${health}`}>
           {problem}

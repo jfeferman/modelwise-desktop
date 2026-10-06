@@ -34,7 +34,23 @@ export interface Connection {
 export interface Status {
   schema: 1;
   connections: Connection[];
-  app: { paused: boolean };
+  app: { paused: boolean; autostart: boolean };
+}
+
+/** The connection owner's own usage: tokens always, money only when a charge arrived. */
+export interface OwnUsage {
+  period: string;
+  from: string;
+  to: string;
+  invocations: number;
+  tokens: number;
+  meteredSpend: number;
+  lastActivityAt: string | null;
+}
+
+export interface UsageResult {
+  schema: 1;
+  usage: { configDir: string; url: string; usage: OwnUsage | null; error: string | null }[];
 }
 
 export interface SyncResult {
