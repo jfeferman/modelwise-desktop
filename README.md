@@ -39,13 +39,13 @@ You need Rust, [Bun](https://bun.sh) and Node 20 or later.
 
 ```bash
 npm install
-MODELWISE_CLI_BUNDLE=<path to dist/cli.js> npm run tauri build
+npm run tauri build
 ```
 
-`scripts/build-cli.mjs` compiles the `modelwise` command into one executable with Bun and checks it
-prints the JSON version this app reads. Until the version of `@modelwise/cli` with `--json` is on npm,
-the bundle comes from a checkout of its source; after that, `package.json` pins the version and the
-variable is not needed. The app and the disk image land in `src-tauri/target/release/bundle/`.
+`scripts/build-cli.mjs` compiles the `modelwise` command into one executable with Bun, from the
+`@modelwise/cli` version `package.json` pins, and checks it prints the JSON version this app reads.
+To build against a command you are working on instead, point `MODELWISE_CLI_BUNDLE` at its
+`dist/cli.js`. The app and the disk image land in `src-tauri/target/release/bundle/`.
 
 For working on the panel, a debug build opens it at launch and keeps it open:
 
