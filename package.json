@@ -1,0 +1,28 @@
+{
+  "name": "modelwise-desktop",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A menu bar app that shows whether Claude Code on this machine is connected to Modelwise, and manages the connection.",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "cli": "node scripts/build-cli.mjs",
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "typecheck": "tsc --noEmit",
+    "tauri": "tauri"
+  },
+  "dependencies": {
+    "@tauri-apps/api": "^2.12.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.12.0",
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.0",
+    "typescript": "^5.6.0",
+    "vite": "^5.4.0"
+  }
+}

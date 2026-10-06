@@ -1,0 +1,8 @@
+node_modules/
+dist/
+src-tauri/target/
+src-tauri/gen/
+# Built from the pinned @modelwise/cli by scripts/build-cli.mjs.
+src-tauri/binaries/
+.DS_Store
+*.log

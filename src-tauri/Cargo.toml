@@ -1,0 +1,25 @@
+[package]
+name = "modelwise-desktop"
+version = "0.1.0"
+description = "A menu bar app for the modelwise command"
+license = "MIT"
+edition = "2021"
+
+[lib]
+name = "modelwise_desktop_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = ["tray-icon", "image-png"] }
+tauri-plugin-positioner = { version = "2", features = ["tray-icon"] }
+serde_json = "1"
+
+[profile.release]
+opt-level = "s"
+lto = true
+codegen-units = 1
+strip = true
+panic = "abort"

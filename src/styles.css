@@ -1,0 +1,148 @@
+:root {
+  color-scheme: light dark;
+  --bg: #ffffff;
+  --text: #1c1f26;
+  --muted: #667085;
+  --line: #e4e7ec;
+  --working: #1a9f53;
+  --attention: #c77700;
+  --broken: #d92d20;
+  font: 13px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1c1f26;
+    --text: #eef0f4;
+    --muted: #98a2b3;
+    --line: #333945;
+    --working: #3ccb7f;
+    --attention: #f0a53a;
+    --broken: #f97066;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  user-select: none;
+  cursor: default;
+}
+
+.panel {
+  padding: 12px 14px;
+}
+
+.panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+h1 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+button {
+  font: inherit;
+  color: var(--text);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 3px 9px;
+}
+
+button:disabled {
+  color: var(--muted);
+}
+
+.connections {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.connection {
+  padding: 10px 0;
+  border-top: 1px solid var(--line);
+}
+
+.connection-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.connection-name {
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.connection-host {
+  margin-left: auto;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.connection-detail {
+  margin-left: 15px;
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dot {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.dot-working {
+  background: var(--working);
+}
+
+.dot-attention {
+  background: var(--attention);
+}
+
+.dot-broken {
+  background: var(--broken);
+}
+
+.problem {
+  margin: 4px 0 0 15px;
+}
+
+.problem-attention {
+  color: var(--attention);
+}
+
+.problem-broken {
+  color: var(--broken);
+}
+
+.empty {
+  color: var(--muted);
+  margin: 0;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+}
+
+code {
+  font: 12px ui-monospace, SFMono-Regular, Menlo, monospace;
+  color: var(--text);
+  user-select: text;
+}
