@@ -1,7 +1,7 @@
 {
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
-  "description": "The panel may call this app's own commands (src/commands.rs) and nothing else: no shell, no files, no network.",
+  "description": "The panel may call this app's own commands (src/commands.rs) and listen for the events they send it, and nothing else: no shell, no files, no network.",
   "windows": ["panel"],
-  "permissions": []
+  "permissions": ["core:event:allow-listen", "core:event:allow-unlisten"]
 }

@@ -1,7 +1,8 @@
 //! Runs the embedded `modelwise` command and reads what `--json` prints.
 
+use std::io::{BufRead, BufReader};
 use std::path::PathBuf;
-use std::process::Command;
+use std::process::{Command, Stdio};
 
 use serde_json::Value;
 
@@ -24,18 +25,55 @@ fn executable() -> Result<PathBuf, String> {
     }
 }
 
-/// Runs `modelwise <args> --json` and returns the one document it prints. A
-/// failure the command reports becomes its message.
-pub fn run(args: &[&str]) -> Result<Value, String> {
-    let output = Command::new(executable()?)
+fn command(args: &[&str]) -> Result<Command, String> {
+    let mut command = Command::new(executable()?);
+    command
         .args(args)
         .arg("--json")
         // Bun colours errors when this is set, whoever is reading.
         .env_remove("FORCE_COLOR")
+        .stdin(Stdio::null());
+    Ok(command)
+}
+
+/// Runs `modelwise <args> --json` and returns the one document it prints. A
+/// failure the command reports becomes its message.
+pub fn run(args: &[&str]) -> Result<Value, String> {
+    let output = command(args)?
         .output()
         .map_err(|error| format!("Could not run the modelwise command: {error}"))?;
 
     document(&String::from_utf8_lossy(&output.stdout))
+}
+
+/// Runs a command that prints one document per line as it goes (`connect`),
+/// handing each to `each` as it arrives. Returns the first failure reported.
+pub fn run_streaming(args: &[&str], mut each: impl FnMut(&Value)) -> Result<(), String> {
+    let mut child = command(args)?
+        .stdout(Stdio::piped())
+        .stderr(Stdio::null())
+        .spawn()
+        .map_err(|error| format!("Could not run the modelwise command: {error}"))?;
+    let stdout = child.stdout.take().ok_or("The modelwise command has no output")?;
+    let mut failure = None;
+
+    for line in BufReader::new(stdout).lines() {
+        let Ok(line) = line else { break };
+
+        if line.trim().is_empty() {
+            continue;
+        }
+
+        match document(&line) {
+            Ok(value) => each(&value),
+            Err(message) => {
+                failure.get_or_insert(message);
+            }
+        }
+    }
+
+    let _ = child.wait();
+    failure.map_or(Ok(()), Err)
 }
 
 fn document(printed: &str) -> Result<Value, String> {
@@ -52,7 +90,12 @@ fn document(printed: &str) -> Result<Value, String> {
         None => return Err("The modelwise command printed something this app cannot read.".to_string()),
     }
 
-    if let Some(message) = value.pointer("/error/message").and_then(Value::as_str) {
+    // One document reports a failure as `error`; a connect event as `event: "error"`.
+    if let Some(message) = value
+        .pointer("/error/message")
+        .or_else(|| (value.get("event").and_then(Value::as_str) == Some("error")).then(|| value.get("message")).flatten())
+        .and_then(Value::as_str)
+    {
         return Err(message.to_string());
     }
 
@@ -73,6 +116,9 @@ mod tests {
     fn a_failure_becomes_its_message() {
         let error = document(r#"{"schema":1,"error":{"code":"not-connected","message":"Not connected."}}"#).unwrap_err();
         assert_eq!(error, "Not connected.");
+
+        let error = document(r#"{"schema":1,"event":"error","code":"failed","message":"Denied."}"#).unwrap_err();
+        assert_eq!(error, "Denied.");
     }
 
     #[test]

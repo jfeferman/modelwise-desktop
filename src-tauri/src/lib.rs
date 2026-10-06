@@ -8,6 +8,8 @@
 mod cli;
 mod commands;
 mod health;
+mod scheduler;
+mod settings;
 mod tray;
 
 /// In a debug build, MODELWISE_DESKTOP_OPEN opens the panel at launch and keeps
@@ -20,7 +22,15 @@ pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_positioner::init())
         .manage(tray::PanelState::default())
-        .invoke_handler(tauri::generate_handler![commands::status])
+        .manage(commands::AppState::default())
+        .invoke_handler(tauri::generate_handler![
+            commands::status,
+            commands::sync_now,
+            commands::repair,
+            commands::disconnect,
+            commands::connect,
+            commands::set_paused
+        ])
         .setup(|app| {
             // A menu bar app: no Dock icon, no app menu.
             #[cfg(target_os = "macos")]
@@ -33,6 +43,7 @@ pub fn run() {
             tauri::async_runtime::spawn(async move {
                 let _ = commands::check(&handle).await;
             });
+            scheduler::start(app.handle().clone());
 
             if held_open() {
                 tray::open_panel(app.handle())?;

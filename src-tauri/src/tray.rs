@@ -3,6 +3,7 @@
 //! The panel is created when the icon is clicked and destroyed when it loses
 //! focus, so no web view is alive while nobody is looking.
 
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Mutex;
 use std::time::{Duration, Instant};
 
@@ -21,13 +22,22 @@ const TRAY: &str = "modelwise";
 #[derive(Default)]
 pub struct PanelState {
     dismissed: Mutex<Option<Instant>>,
+    /// While true, losing focus does not close the panel.
+    held: AtomicBool,
+}
+
+/// Keeps the panel open through something that takes the focus away, such as
+/// approving a sign-in in the browser.
+pub fn hold_panel(app: &AppHandle, held: bool) {
+    app.state::<PanelState>().held.store(held, Ordering::Relaxed);
 }
 
 const REOPEN_GUARD: Duration = Duration::from_millis(300);
 
 pub fn create(app: &AppHandle) -> tauri::Result<()> {
+    let sync = MenuItem::with_id(app, "sync", "Sync now", true, None::<&str>)?;
     let quit = MenuItem::with_id(app, "quit", "Quit Modelwise", true, None::<&str>)?;
-    let menu = Menu::with_items(app, &[&quit])?;
+    let menu = Menu::with_items(app, &[&sync, &quit])?;
 
     TrayIconBuilder::with_id(TRAY)
         .icon(tauri::include_image!("icons/tray.png"))
@@ -36,10 +46,16 @@ pub fn create(app: &AppHandle) -> tauri::Result<()> {
         .menu(&menu)
         // Left click opens the panel; the menu is on right click.
         .show_menu_on_left_click(false)
-        .on_menu_event(|app, event| {
-            if event.id.as_ref() == "quit" {
-                app.exit(0);
+        .on_menu_event(|app, event| match event.id.as_ref() {
+            "quit" => app.exit(0),
+            "sync" => {
+                let app = app.clone();
+                tauri::async_runtime::spawn(async move {
+                    let _ = crate::commands::sync().await;
+                    let _ = crate::commands::check(&app).await;
+                });
             }
+            _ => {}
         })
         .on_tray_icon_event(|tray, event| {
             let app = tray.app_handle();
@@ -90,7 +106,7 @@ fn toggle_panel(app: &AppHandle) {
 pub fn open_panel(app: &AppHandle) -> tauri::Result<()> {
     let panel = WebviewWindowBuilder::new(app, PANEL, WebviewUrl::App("index.html".into()))
         .title("Modelwise")
-        .inner_size(360.0, 420.0)
+        .inner_size(360.0, 480.0)
         .decorations(false)
         .resizable(false)
         .always_on_top(true)
@@ -111,6 +127,10 @@ pub fn open_panel(app: &AppHandle) -> tauri::Result<()> {
     let app = app.clone();
     panel.on_window_event(move |event| {
         if let WindowEvent::Focused(false) = event {
+            if app.state::<PanelState>().held.load(Ordering::Relaxed) {
+                return;
+            }
+
             *app.state::<PanelState>().dismissed.lock().unwrap() = Some(Instant::now());
 
             if let Some(panel) = app.get_webview_window(PANEL) {

@@ -146,3 +146,77 @@ code {
   color: var(--text);
   user-select: text;
 }
+
+.actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.panel-head .actions {
+  margin-top: 0;
+}
+
+.connection .actions {
+  margin-left: 15px;
+}
+
+button.danger {
+  color: var(--broken);
+  border-color: var(--broken);
+}
+
+button.link {
+  border: none;
+  padding: 0;
+  color: var(--muted);
+}
+
+.hint {
+  margin: 4px 0;
+  color: var(--muted);
+}
+
+.code {
+  font: 600 13px ui-monospace, SFMono-Regular, Menlo, monospace;
+  color: var(--text);
+  letter-spacing: 0.05em;
+}
+
+.connect {
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+}
+
+.connect-row {
+  display: flex;
+  gap: 6px;
+  margin: 8px 0;
+}
+
+input[type="url"] {
+  flex: 1;
+  min-width: 0;
+  font: inherit;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 3px 8px;
+  user-select: text;
+}
+
+.panel-foot {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+}
+
+.toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
