@@ -1,7 +1,7 @@
 # Modelwise Desktop
 
 A small app that sits in the macOS menu bar and shows whether Claude Code on this machine is
-connected to Modelwise and sending its telemetry. Click the icon for each connection's state; the
+connected to [Modelwise](https://modelwise.app) and sending its telemetry. Click the icon for each connection's state; the
 icon itself changes when something needs attention. From the panel you can connect (you sign in
 through your browser), sync now, repair Claude Code's settings and disconnect, and past sessions
 are uploaded in the background every hour unless you pause it.

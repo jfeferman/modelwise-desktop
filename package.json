@@ -4,6 +4,11 @@
   "private": true,
   "description": "A menu bar app that shows whether Claude Code on this machine is connected to Modelwise, and manages the connection.",
   "license": "MIT",
+  "homepage": "https://modelwise.app",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jfeferman/modelwise-desktop.git"
+  },
   "type": "module",
   "scripts": {
     "cli": "node scripts/build-cli.mjs",
