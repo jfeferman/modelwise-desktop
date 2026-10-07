@@ -114,9 +114,9 @@ pub fn open_panel(app: &AppHandle) -> tauri::Result<()> {
         .title("Modelwise")
         .inner_size(PANEL_WIDTH, 200.0)
         .decorations(false)
-        // The page draws its own rounded border; the window itself is clear.
+        // The page draws its own rounded border; the window itself is clear, so the system shadow follows the panel.
         .transparent(true)
-        .shadow(false)
+        .shadow(true)
         .resizable(false)
         .always_on_top(true)
         .skip_taskbar(true)
