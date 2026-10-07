@@ -17,7 +17,8 @@ export function App() {
   useLayoutEffect(() => {
     const element = panel.current;
     if (!element) return;
-    const fit = () => resizePanel(Math.ceil(element.getBoundingClientRect().height));
+    // The bottom edge, not the height, so the margin above the panel is inside the window.
+    const fit = () => resizePanel(Math.ceil(element.getBoundingClientRect().bottom));
     const observer = new ResizeObserver(fit);
     observer.observe(element);
     fit();

@@ -35,12 +35,13 @@ body {
   cursor: default;
 }
 
-/* The window is clear and sized to this box, so its corners and border are the panel's. */
+/* The window is clear and sized to this box, so its corners and border are the panel's. The top margin keeps it off the menu bar. */
 .panel {
+  margin-top: 2px;
   padding: 12px 14px;
   background: var(--bg);
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 16px;
 }
 
 .panel-head {
