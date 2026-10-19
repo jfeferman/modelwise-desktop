@@ -1,6 +1,6 @@
 {
   "name": "modelwise-desktop",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "description": "A menu bar app that shows whether Claude Code on this machine is connected to Modelwise, and manages the connection.",
   "license": "MIT",
