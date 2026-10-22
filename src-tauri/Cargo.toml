@@ -1,6 +1,6 @@
 [package]
 name = "modelwise-desktop"
-version = "0.1.1"
+version = "0.1.2"
 description = "A menu bar app for the modelwise command"
 license = "MIT"
 edition = "2021"
